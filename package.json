@@ -1,0 +1,22 @@
+{
+  "name": "poweredge_exporter",
+  "version": "1.0.0",
+  "description": "Prometheus exporter for Dell PowerEdge systems",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CaptainVascular/poweredge_exporter.git"
+  },
+  "author": "CaptainVascular",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CaptainVascular/poweredge_exporter/issues"
+  },
+  "homepage": "https://github.com/CaptainVascular/poweredge_exporter#readme",
+  "dependencies": {
+    "prom-client": "^11.5.3"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.11"
+  }
+}
