@@ -20,12 +20,17 @@ var Stat = /** @class */ (function () {
     }
     Stat.prototype.set = function (label, value, unit, idNumber) {
         this.label = label + (this.labelDetail ? " (" + this.labelDetail + ")" : '');
-        this.id = config.prefix + "_" + this.prefix + "_" + (idNumber ? idNumber + "_" : '') + this.label.replace(/\s+/g, '_').replace(/[^\w_-]+/g, '').toLowerCase();
+        this.id = config.prefix + "_" + this.prefix + "_" + label.replace(/\s+/g, '_').replace(/[^\w_-]+/g, '').toLowerCase();
         this.value = parseFloat(value);
         this.unit = unit;
+        if (idNumber)
+            this.idNumber = parseInt(idNumber);
     };
     Stat.prototype.push = function (gauge) {
-        gauge.set({ label: this.label, unit: this.unit }, this.value);
+        var labelValues = { label: this.label, unit: this.unit };
+        if (this.idNumber !== undefined)
+            labelValues.id = this.idNumber;
+        gauge.set(labelValues, this.value);
     };
     return Stat;
 }());
@@ -53,6 +58,11 @@ var SensorStat = /** @class */ (function (_super) {
     }
     SensorStat.prototype.parse = function (rawData) {
         var _a = rawData.split('|').map(function (value) { return value.trim(); }), id = _a[0], name = _a[1], type = _a[2], reading = _a[3], units = _a[4], event = _a[5];
+        var fan = name.match(/^FAN (\d+) RPM$/i);
+        if (fan) {
+            name = 'Fan Speed';
+            this.labelDetail = 'Fan ' + fan[1];
+        }
         this.set(name, reading, units, id);
     };
     return SensorStat;

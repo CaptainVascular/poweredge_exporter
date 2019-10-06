@@ -3,10 +3,11 @@ import {Gauge} from 'prom-client';
 import {DellStat, SensorStat} from './stat';
 
 const config = require('../config');
+const gauges: Map<string, Gauge> = new Map();
 
 export abstract class Command {
-	public abstract Stat: typeof DellStat | typeof SensorStat;
-	public gauges: Map<string, Gauge> = new Map();
+	protected abstract Stat: typeof DellStat | typeof SensorStat;
+	protected abstract labelNames: string[];
 	public load: Promise<void>;
 
 	constructor(public cmd: string, public labelDetail?: string) {
@@ -15,9 +16,7 @@ export abstract class Command {
 				if (!line) continue;
 				const stat = new this.Stat(this.labelDetail);
 				stat.parse(line);
-				const gauge = new Gauge({name: stat.id, help: stat.label, labelNames: ['label', 'unit']});
-				stat.push(gauge);
-				this.gauges.set(stat.id, gauge);
+				gauges.has(stat.id) || gauges.set(stat.id, new Gauge({name: stat.id, help: stat.label, labelNames: this.labelNames}));
 				console.log('Registered stat: ' + stat.label);
 			}
 		});
@@ -29,7 +28,7 @@ export abstract class Command {
 				if (!line) continue;
 				const stat = new this.Stat(this.labelDetail);
 				stat.parse(line);
-				const gauge = this.gauges.get(stat.id);
+				const gauge = gauges.get(stat.id);
 				if (gauge) stat.push(gauge);
 			}
 		}, (error) => {
@@ -48,7 +47,8 @@ export abstract class Command {
 }
 
 export class DellCommand extends Command {
-	public Stat = DellStat;
+	protected Stat = DellStat;
+	protected labelNames = ['label', 'unit'];
 
 	constructor(dellArgs: string, labelDetail?: string) {
 		super(`${config.dellCmd} ${dellArgs}`, labelDetail);
@@ -56,7 +56,8 @@ export class DellCommand extends Command {
 }
 
 export class SensorCommand extends Command {
-	public Stat = SensorStat;
+	protected Stat = SensorStat;
+	protected labelNames = ['id', 'label', 'unit'];
 
 	constructor() {
 		super(config.sensorCmd);

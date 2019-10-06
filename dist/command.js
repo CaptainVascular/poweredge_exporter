@@ -17,12 +17,12 @@ var child_process_1 = require("child_process");
 var prom_client_1 = require("prom-client");
 var stat_1 = require("./stat");
 var config = require('../config');
+var gauges = new Map();
 var Command = /** @class */ (function () {
     function Command(cmd, labelDetail) {
         var _this = this;
         this.cmd = cmd;
         this.labelDetail = labelDetail;
-        this.gauges = new Map();
         this.load = this.run().then(function (output) {
             for (var _i = 0, output_1 = output; _i < output_1.length; _i++) {
                 var line = output_1[_i];
@@ -30,9 +30,7 @@ var Command = /** @class */ (function () {
                     continue;
                 var stat = new _this.Stat(_this.labelDetail);
                 stat.parse(line);
-                var gauge = new prom_client_1.Gauge({ name: stat.id, help: stat.label, labelNames: ['label', 'unit'] });
-                stat.push(gauge);
-                _this.gauges.set(stat.id, gauge);
+                gauges.has(stat.id) || gauges.set(stat.id, new prom_client_1.Gauge({ name: stat.id, help: stat.label, labelNames: _this.labelNames }));
                 console.log('Registered stat: ' + stat.label);
             }
         });
@@ -46,7 +44,7 @@ var Command = /** @class */ (function () {
                     continue;
                 var stat = new _this.Stat(_this.labelDetail);
                 stat.parse(line);
-                var gauge = _this.gauges.get(stat.id);
+                var gauge = gauges.get(stat.id);
                 if (gauge)
                     stat.push(gauge);
             }
@@ -72,6 +70,7 @@ var DellCommand = /** @class */ (function (_super) {
     function DellCommand(dellArgs, labelDetail) {
         var _this = _super.call(this, config.dellCmd + " " + dellArgs, labelDetail) || this;
         _this.Stat = stat_1.DellStat;
+        _this.labelNames = ['label', 'unit'];
         return _this;
     }
     return DellCommand;
@@ -82,6 +81,7 @@ var SensorCommand = /** @class */ (function (_super) {
     function SensorCommand() {
         var _this = _super.call(this, config.sensorCmd) || this;
         _this.Stat = stat_1.SensorStat;
+        _this.labelNames = ['id', 'label', 'unit'];
         return _this;
     }
     return SensorCommand;
