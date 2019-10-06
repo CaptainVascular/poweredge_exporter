@@ -8,6 +8,7 @@ const commands = [
 	new DellCommand('get-instantaneous-power-consumption-data 0', 'Total'),
 	new DellCommand('get-instantaneous-power-consumption-data 1', 'PSU1'),
 	new DellCommand('get-instantaneous-power-consumption-data 2', 'PSU2'),
+	new DellCommand('get-power-consumption-statistics average'),
 	new SensorCommand()
 ];
 

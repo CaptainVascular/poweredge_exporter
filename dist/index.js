@@ -8,6 +8,7 @@ var commands = [
     new command_1.DellCommand('get-instantaneous-power-consumption-data 0', 'Total'),
     new command_1.DellCommand('get-instantaneous-power-consumption-data 1', 'PSU1'),
     new command_1.DellCommand('get-instantaneous-power-consumption-data 2', 'PSU2'),
+    new command_1.DellCommand('get-power-consumption-statistics average'),
     new command_1.SensorCommand()
 ];
 Promise.all(commands.map(function (command) { return command.load; })).then(function () {
