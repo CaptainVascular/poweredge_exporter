@@ -2,5 +2,6 @@
 	"prefix": "poweredge",
 	"dellCmd": "ipmi-oem Dell",
 	"sensorCmd": "ipmi-sensors --no-header-output --record-ids=5,36,37,38,39,40,49,50,51,52,61",
+	"host": "0.0.0.0",
 	"port": 9568
 }

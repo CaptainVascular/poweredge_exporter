@@ -18,8 +18,8 @@ Promise.all(commands.map((command) => command.load)).then(() => {
 			res.end(register.metrics());
 		});
 	});
-	server.listen(config.port, () => {
-		console.log('Listening on port ' + config.port);
+	server.listen({host: config.host, port: config.port}, () => {
+		console.log(`Listening on ${config.host}:${config.port}`);
 	});
 
 }, (error) => {

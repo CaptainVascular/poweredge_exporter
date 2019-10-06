@@ -16,8 +16,8 @@ Promise.all(commands.map(function (command) { return command.load; })).then(func
             res.end(prom_client_1.register.metrics());
         });
     });
-    server.listen(config.port, function () {
-        console.log('Listening on port ' + config.port);
+    server.listen({ host: config.host, port: config.port }, function () {
+        console.log("Listening on " + config.host + ":" + config.port);
     });
 }, function (error) {
     console.error(error);
